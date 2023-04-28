@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Wrapper\Wrapper.csproj" />
+      <Folder Include="Wrapper\" />
     </ItemGroup>
 
 </Project>
