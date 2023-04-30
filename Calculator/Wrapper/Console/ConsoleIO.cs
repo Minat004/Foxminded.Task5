@@ -1,7 +1,7 @@
 ﻿using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace Wrapper.Console;
+namespace Calculator.Wrapper.Console;
 
 public class ConsoleIO : IConsoleIO
 {
