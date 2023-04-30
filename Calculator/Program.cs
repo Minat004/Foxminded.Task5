@@ -1,8 +1,8 @@
 ﻿using Calculator;
+using Calculator.Wrapper.Console;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Wrapper.Console;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration(config =>

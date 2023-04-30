@@ -1,4 +1,7 @@
 ﻿using System.Text.RegularExpressions;
+using Calculator.Wrapper.Console;
+using Microsoft.Extensions.Configuration;
+using Spectre.Console;
 
 namespace Calculator;
 
@@ -17,12 +20,38 @@ public class CalcNumerator
     };
     
     private readonly string _input;
+    private readonly IConfiguration _configuration;
+    private readonly IConsoleIO _console;
     private readonly Regex _regex;
+    private readonly string[]? _modes;
 
-    public CalcNumerator(string input)
+    public CalcNumerator(string input, IConfiguration configuration, IConsoleIO console)
     {
         _input = input;
+        _configuration = configuration;
+        _console = console;
         _regex = new Regex(PATTERN);
+        _modes = _configuration.GetSection("Modes").Get<string[]>();
+    }
+
+    public void Header()
+    {
+        _console.Write(new FigletText($"{_configuration["AppName"]} {_configuration["Version"]}")
+            .LeftJustified()
+            .Color(Color.Green));
+    }
+
+    public string SelectMode()
+    {
+        var mode = _console.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[green]Select mode:[/]")
+                .PageSize(3)
+                .AddChoices(_modes!));
+        
+        _console.WriteLine($"[green]{mode} mode![/]");
+
+        return mode;
     }
 
     public decimal Calculation()

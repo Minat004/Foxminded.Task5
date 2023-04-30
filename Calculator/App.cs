@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Text.RegularExpressions;
+﻿using Calculator.Wrapper.Console;
 using Microsoft.Extensions.Configuration;
-using Spectre.Console;
-using Wrapper.Console;
 
 namespace Calculator;
 
@@ -11,25 +8,24 @@ public class App
     private readonly IConfiguration _configuration;
     private readonly IConsoleIO _console;
 
+    public App(IConfiguration configuration, IConsoleIO console)
+    {
+        _configuration = configuration;
+        _console = console;
+    }
+
     public Task RunAsync()
     {
-        _console.Write(new FigletText($"{_configuration["AppName"]} {_configuration["Version"]}")
-            .LeftJustified()
-            .Color(Color.Green));
-        
         const string EXPRESSION = @"1+2*(3+4/2-(1+2))*2+1";
 
-        var calc = new CalcNumerator(EXPRESSION);
+        var calc = new CalcNumerator(EXPRESSION, _configuration, _console);
+        
+        calc.Header();
+        calc.SelectMode();
 
         Console.WriteLine();
         Console.WriteLine(calc.Calculation());
 
         return Task.CompletedTask;
-    }
-
-    public App(IConfiguration configuration, IConsoleIO console)
-    {
-        _configuration = configuration;
-        _console = console;
     }
 }
