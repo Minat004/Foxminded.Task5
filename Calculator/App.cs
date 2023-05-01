@@ -16,16 +16,36 @@ public class App
 
     public Task RunAsync()
     {
-        const string EXPRESSION = @"1+2*(3+4/2-(1+2))*2+1";
+        var calcIO = new CalcIO(_configuration, _console);
 
-        var calc = new CalcNumerator(EXPRESSION, _configuration, _console);
+        calcIO.Header();
+        var mode = calcIO.SelectMode();
+
+        var calc = new CalcNumerator();
+
+        // while (true)
+        // {
+        //     try
+        //     {
+        //         calc.Calculation(mode);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         mode.SetResult(e.Message);
+        //         throw;
+        //     }
+        // }
         
-        calc.Header();
-        calc.SelectMode();
-
-        Console.WriteLine();
-        Console.WriteLine(calc.Calculation());
-
+        try
+        {
+            calc.Calculation(mode);
+        }
+        catch (Exception e)
+        {
+            mode.SetResult(e.Message);
+            throw;
+        }
+        
         return Task.CompletedTask;
     }
 }

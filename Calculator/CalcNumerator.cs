@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Calculator.Wrapper.Console;
-using Microsoft.Extensions.Configuration;
-using Spectre.Console;
+using Calculator.Modes;
 
 namespace Calculator;
 
@@ -18,53 +16,43 @@ public class CalcNumerator
         {"(", -1},
         {")", 0}
     };
-    
-    private readonly string _input;
-    private readonly IConfiguration _configuration;
-    private readonly IConsoleIO _console;
+
     private readonly Regex _regex;
-    private readonly string[]? _modes;
 
-    public CalcNumerator(string input, IConfiguration configuration, IConsoleIO console)
+    public CalcNumerator()
     {
-        _input = input;
-        _configuration = configuration;
-        _console = console;
         _regex = new Regex(PATTERN);
-        _modes = _configuration.GetSection("Modes").Get<string[]>();
     }
 
-    public void Header()
+    public void Calculation(IMode mode)
     {
-        _console.Write(new FigletText($"{_configuration["AppName"]} {_configuration["Version"]}")
-            .LeftJustified()
-            .Color(Color.Green));
-    }
-
-    public string SelectMode()
-    {
-        var mode = _console.Prompt(
-            new SelectionPrompt<string>()
-                .Title("[green]Select mode:[/]")
-                .PageSize(3)
-                .AddChoices(_modes!));
-        
-        _console.WriteLine($"[green]{mode} mode![/]");
-
-        return mode;
-    }
-
-    public decimal Calculation()
-    {
-        var digits = new Stack<decimal>();
-        var operations = new Stack<string>();
-        
-        foreach (Match match in _regex.Matches(_input))
+        if (File.Exists(@"output.txt"))
         {
-            SelectStack(match, digits, operations);
+            File.Delete(@"output.txt");
         }
+        
+        foreach (var input in mode.GetExpressions())
+        {
+            Validator.AnyWordCharacter(input);
+            Validator.NotOperationSymbol(input);
+            Validator.DigitOnEdges(input);
+            Validator.CorrectQueue(input);
+            
+            var digits = new Stack<decimal>();
+            var operations = new Stack<string>();
+            
+            foreach (Match match in _regex.Matches(input!))
+            {
+                SelectStack(match, digits, operations);
+            }
 
-        return Operation(operations.Pop(), digits.Pop(), digits.Pop());
+            while (operations.Count != 1 && digits.Count != 2)
+            {
+                digits.Push(Operation(operations.Pop(), digits.Pop(), digits.Pop()));
+            }
+            
+            mode.SetResult(Operation(operations.Pop(), digits.Pop(), digits.Pop()), input!);
+        }
     }
 
     #region private_methods
@@ -76,10 +64,10 @@ public class CalcNumerator
             return;
         }
 
-        if (!Array.Exists(_operationPriority.Keys.ToArray(), x => x == match.Value))
-        {
-            throw new Exception("Exception. Wrong input");
-        }
+        // if (!Array.Exists(_operationPriority.Keys.ToArray(), x => x == match.Value))
+        // {
+        //     throw new Exception("Exception. Wrong input");
+        // }
         
         var isPriority = operations.Count != 0 && _operationPriority[match.Value] <= _operationPriority[operations.Peek()];
         var isOpenBreak = _operationPriority[match.Value] == -1;
