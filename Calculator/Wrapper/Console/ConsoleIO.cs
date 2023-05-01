@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using Calculator.Modes;
+using Spectre.Console;
 using Spectre.Console.Rendering;
 
 namespace Calculator.Wrapper.Console;
@@ -18,6 +19,11 @@ public class ConsoleIO : IConsoleIO
     public void WriteLine(string value)
     {
         AnsiConsole.MarkupLine(value);
+    }
+
+    public void WriteLine()
+    {
+        System.Console.WriteLine();
     }
 
     public void Write(IRenderable value)
@@ -40,8 +46,18 @@ public class ConsoleIO : IConsoleIO
         return AnsiConsole.Prompt(value);
     }
 
+    public IMode Prompt(IPrompt<IMode> value)
+    {
+        return AnsiConsole.Prompt(value);
+    }
+
     public string Prompt()
     {
         return string.Empty;
+    }
+
+    public void WriteLine(decimal value)
+    {
+        System.Console.WriteLine(value);
     }
 }
