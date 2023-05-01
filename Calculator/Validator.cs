@@ -3,46 +3,43 @@ using Calculator.ExpressionException;
 
 namespace Calculator;
 
-public class Validator
+public static class Validator
 {
-    private readonly string _input;
-    private readonly string _pattern;
-
-    public Validator(string input, string pattern)
+    public static void AnyWordCharacter(string? input)
     {
-        _input = input;
-        _pattern = pattern;
-    }
-
-    public void AnyWordCharacter()
-    {
-        if (Regex.IsMatch(_input, @"\w+"))
+        if (Regex.IsMatch(input!, @"[\p{L}\p{Mn}\p{Pc}]+"))
         {
             throw new AnyWordCharacterException();
         }
     }
 
-    public void NotOperationSymbol()
+    public static void NotOperationSymbol(string? input)
     {
-        if (Regex.IsMatch(_input, @"[^\w\s\,\d*+/()-]+"))
+        if (Regex.IsMatch(input!, @"[^\w\s\,\d*+/()-]+"))
         {
             throw new NotOperationSymbolException();
         }
     }
 
-    public void StartWithDigits()
+    public static void DigitOnEdges(string? input)
     {
-        if (Regex.IsMatch(_input, @"^\s*\d+"))
+        if (!Regex.IsMatch(input!, @"^\s*\-*\s*\(*\s*\-*\s*\d+")
+            || !Regex.IsMatch(input!, @"\s*\d+\s*\)*\s*$"))
         {
             throw new MarginException();
         }
     }
-    
-    public void EndWithDigits()
+
+    public static void CorrectQueue(string? input)
     {
-        if (Regex.IsMatch(_input, @"\d+\s*$"))
+        if (Regex.IsMatch(input!, @"\d+\s+\d+") && Regex.IsMatch(input!, @"[*+/(-]\s*[**+/)-]"))
         {
-            throw new MarginException();
+            throw new WrongQueueException();
         }
+    }
+
+    public static void CorrectBreaks(string input)
+    {
+        
     }
 }
