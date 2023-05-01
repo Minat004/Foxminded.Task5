@@ -21,7 +21,7 @@ public class App
         calcIO.Header();
         var mode = calcIO.SelectMode();
 
-        var calc = new CalcNumerator();
+        var calc = new CalcNumerator(mode);
 
         // while (true)
         // {
@@ -38,7 +38,7 @@ public class App
         
         try
         {
-            calc.Calculation(mode);
+            calc.Calculation();
         }
         catch (Exception e)
         {

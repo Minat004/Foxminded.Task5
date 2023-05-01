@@ -5,6 +5,9 @@ namespace Calculator;
 
 public class CalcNumerator
 {
+    private readonly Regex _regex;
+    private readonly IMode _mode;
+    
     private const string PATTERN = @"\d+,?\d*|[*+/()-]";
 
     private static readonly Dictionary<string, int> _operationPriority = new()
@@ -17,21 +20,17 @@ public class CalcNumerator
         {")", 0}
     };
 
-    private readonly Regex _regex;
-
-    public CalcNumerator()
+    public CalcNumerator(IMode mode)
     {
+        _mode = mode;
         _regex = new Regex(PATTERN);
     }
 
-    public void Calculation(IMode mode)
+    public void Calculation()
     {
-        if (File.Exists(@"output.txt"))
-        {
-            File.Delete(@"output.txt");
-        }
+        Validator.DeleteIfExist();
         
-        foreach (var input in mode.GetExpressions())
+        foreach (var input in _mode.GetExpressions())
         {
             Validator.AnyWordCharacter(input);
             Validator.NotOperationSymbol(input);
@@ -51,7 +50,7 @@ public class CalcNumerator
                 digits.Push(Operation(operations.Pop(), digits.Pop(), digits.Pop()));
             }
             
-            mode.SetResult(Operation(operations.Pop(), digits.Pop(), digits.Pop()), input!);
+            _mode.SetResult(Operation(operations.Pop(), digits.Pop(), digits.Pop()), input!);
         }
     }
 

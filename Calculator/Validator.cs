@@ -5,6 +5,14 @@ namespace Calculator;
 
 public static class Validator
 {
+    public static void DeleteIfExist()
+    {
+        if (File.Exists(@"output.txt"))
+        {
+            File.Delete(@"output.txt");
+        }
+    }
+    
     public static void AnyWordCharacter(string? input)
     {
         if (Regex.IsMatch(input!, @"[\p{L}\p{Mn}\p{Pc}]+"))
