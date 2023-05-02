@@ -22,12 +22,12 @@ public class ConsoleMode : IMode
         return result;
     }
 
-    public void SetResult(decimal value, string input)
+    public void SetResult(string input, decimal value)
     {
         _console.WriteLine($"[green]<result>: {value}[/]");
     }
 
-    public void SetResult(string value)
+    public void SetResult(string input, string value)
     {
         _console.WriteLine($"[red]<result>: {value}[/]");
     }

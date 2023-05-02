@@ -6,7 +6,7 @@ public interface IMode
 
     public IEnumerable<string?> GetExpressions();
 
-    public void SetResult(decimal value, string input = "");
+    public void SetResult(string input, decimal value);
     
-    public void SetResult(string value);
+    public void SetResult(string input, string value);
 }

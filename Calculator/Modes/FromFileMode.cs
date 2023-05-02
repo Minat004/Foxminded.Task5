@@ -1,13 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Calculator.Wrapper.Console;
+﻿using Calculator.Wrapper.Console;
 
 namespace Calculator.Modes;
 
-public class FileMode : IMode
+public class FromFileMode : IMode
 {
     private readonly IConsoleIO _console;
 
-    public FileMode(IConsoleIO console)
+    public FromFileMode(IConsoleIO console)
     {
         _console = console;
     }
@@ -23,9 +22,11 @@ public class FileMode : IMode
                 yield return streamReader.ReadLine();
             }
         }
+        
+        _console.WriteLine("[green]File read.[/]");
     }
 
-    public void SetResult(decimal value, string input)
+    public void SetResult(string input, decimal value)
     {
         using (var streamWriter = new StreamWriter(@"output.txt", true))
         {
@@ -33,14 +34,11 @@ public class FileMode : IMode
         }
     }
 
-    public void SetResult(string value)
+    public void SetResult(string input, string value)
     {
-        using (var streamWriter = new StreamWriter("output.txt"))
+        using (var streamWriter = new StreamWriter(@"output.txt", true))
         {
-            foreach (var line in GetExpressions())
-            {
-                streamWriter.WriteLine($"{line} = {value}");
-            }
+            streamWriter.WriteLine($"{input} = {value}");
         }
     }
 }

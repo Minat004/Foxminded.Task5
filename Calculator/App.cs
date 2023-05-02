@@ -1,4 +1,5 @@
-﻿using Calculator.Wrapper.Console;
+﻿using Calculator.Modes;
+using Calculator.Wrapper.Console;
 using Microsoft.Extensions.Configuration;
 
 namespace Calculator;
@@ -23,29 +24,17 @@ public class App
 
         var calc = new CalcNumerator(mode);
 
-        // while (true)
-        // {
-        //     try
-        //     {
-        //         calc.Calculation(mode);
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         mode.SetResult(e.Message);
-        //         throw;
-        //     }
-        // }
-        
-        try
+        while (true)
         {
             calc.Calculation();
+            
+            if (mode is FromFileMode)
+            {
+                _console.WriteLine("[green]File saved.[/]");
+                break;
+            }
         }
-        catch (Exception e)
-        {
-            mode.SetResult(e.Message);
-            throw;
-        }
-        
+
         return Task.CompletedTask;
     }
 }

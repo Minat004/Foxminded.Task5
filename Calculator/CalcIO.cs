@@ -2,7 +2,6 @@
 using Calculator.Wrapper.Console;
 using Microsoft.Extensions.Configuration;
 using Spectre.Console;
-using FileMode = Calculator.Modes.FileMode;
 
 namespace Calculator;
 
@@ -11,7 +10,7 @@ public class CalcIO
     private static readonly List<IMode> MODES = new()
     {
         new ConsoleMode(new ConsoleIO()),
-        new FileMode(new ConsoleIO())
+        new FromFileMode(new ConsoleIO())
     };
     
     private readonly IConsoleIO _console;

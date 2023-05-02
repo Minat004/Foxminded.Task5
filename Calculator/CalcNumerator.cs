@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Calculator.ExpressionException;
 using Calculator.Modes;
 
 namespace Calculator;
@@ -7,7 +8,7 @@ public class CalcNumerator
 {
     private readonly Regex _regex;
     private readonly IMode _mode;
-    
+
     private const string PATTERN = @"\d+,?\d*|[*+/()-]";
 
     private static readonly Dictionary<string, int> _operationPriority = new()
@@ -32,10 +33,18 @@ public class CalcNumerator
         
         foreach (var input in _mode.GetExpressions())
         {
-            Validator.AnyWordCharacter(input);
-            Validator.NotOperationSymbol(input);
-            Validator.DigitOnEdges(input);
-            Validator.CorrectQueue(input);
+            try
+            {
+                Validator.AnyWordCharacter(input);
+                Validator.NotOperationSymbol(input);
+                Validator.DigitOnEdges(input);
+                Validator.CorrectQueue(input);
+            }
+            catch (Exception e)
+            {
+                _mode.SetResult(input!, e.Message);
+                continue;
+            }
             
             var digits = new Stack<decimal>();
             var operations = new Stack<string>();
@@ -50,7 +59,7 @@ public class CalcNumerator
                 digits.Push(Operation(operations.Pop(), digits.Pop(), digits.Pop()));
             }
             
-            _mode.SetResult(Operation(operations.Pop(), digits.Pop(), digits.Pop()), input!);
+            _mode.SetResult(input!, Operation(operations.Pop(), digits.Pop(), digits.Pop()));
         }
     }
 
@@ -63,11 +72,6 @@ public class CalcNumerator
             return;
         }
 
-        // if (!Array.Exists(_operationPriority.Keys.ToArray(), x => x == match.Value))
-        // {
-        //     throw new Exception("Exception. Wrong input");
-        // }
-        
         var isPriority = operations.Count != 0 && _operationPriority[match.Value] <= _operationPriority[operations.Peek()];
         var isOpenBreak = _operationPriority[match.Value] == -1;
         var isCloseBreak = _operationPriority[match.Value] == 0;
@@ -120,7 +124,7 @@ public class CalcNumerator
             "+" => second + first,
             "/" => second / first,
             "-" => second - first,
-            _ => throw new Exception("Exception. Wrong Input")
+            _ => throw new NotOperationSymbolException()
         };
     }
     #endregion
