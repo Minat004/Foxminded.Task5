@@ -50,8 +50,11 @@ public class ValidatorTests
     [InlineData(@"((1+2)")]
     [InlineData(@"(1+(2/(3*4))")]
     [InlineData(@"1+)(2/(3*4))")]
+    [InlineData(@"((4+1)")]
     public void CorrectBreaksTest(string? input)
     {
         Assert.Throws<NotCorrectBreaksException>(() => Validator.CorrectBreaks(input));
     }
+    
+    
 }

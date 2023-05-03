@@ -27,7 +27,7 @@ public class ConsoleMode : IMode
         _console.WriteLine($"[green]<result>: {value}[/]");
     }
 
-    public void SetResult(string input, string value)
+    public void SetResult(string? input, string value)
     {
         _console.WriteLine($"[red]<result>: {value}[/]");
     }

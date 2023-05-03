@@ -34,7 +34,7 @@ public class FromFileMode : IMode
         }
     }
 
-    public void SetResult(string input, string value)
+    public void SetResult(string? input, string value)
     {
         using (var streamWriter = new StreamWriter(@"output.txt", true))
         {

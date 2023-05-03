@@ -39,36 +39,36 @@ public class CalcNumerator
                 Validator.NotOperationSymbol(input);
                 Validator.DigitOnEdges(input);
                 Validator.CorrectQueue(input);
+                Validator.CorrectBreaks(input);
+                
+                var digits = new Stack<decimal>();
+                var operations = new Stack<string>();
+            
+                foreach (Match match in _regex.Matches(input!))
+                {
+                    SelectStack(input!, match, digits, operations);
+                }
+
+                while (operations.Count != 1 && digits.Count != 2)
+                {
+                    digits.Push(Operation(operations.Pop(), digits.Pop(), digits.Pop()));
+                }
+            
+                _mode.SetResult(input!, Operation(operations.Pop(), digits.Pop(), digits.Pop()));
             }
             catch (Exception e)
             {
                 _mode.SetResult(input!, e.Message);
-                continue;
             }
-            
-            var digits = new Stack<decimal>();
-            var operations = new Stack<string>();
-            
-            foreach (Match match in _regex.Matches(input!))
-            {
-                SelectStack(match, digits, operations);
-            }
-
-            while (operations.Count != 1 && digits.Count != 2)
-            {
-                digits.Push(Operation(operations.Pop(), digits.Pop(), digits.Pop()));
-            }
-            
-            _mode.SetResult(input!, Operation(operations.Pop(), digits.Pop(), digits.Pop()));
         }
     }
 
     #region private_methods
-    private static void SelectStack(Capture match, Stack<decimal> digits, Stack<string> operations)
+    private static void SelectStack(string input, Capture match, Stack<decimal> digits, Stack<string> operations)
     {
         if (decimal.TryParse(match.Value, out var digit))
         {
-            digits.Push(digit);
+            ParseMinusToDigit(input, digits, operations, digit);
             return;
         }
 
@@ -92,6 +92,21 @@ public class CalcNumerator
         
         operations.Push(match.Value);
         
+    }
+
+    private static void ParseMinusToDigit(string input, Stack<decimal> digits, Stack<string> operations, decimal digit)
+    {
+        var isStartWithMinus = operations.Count != 0 && digits.Count == 0 && operations.Peek() == "-";
+        var isMinusAfterOpenBreak = operations.Count >= 2 && Validator.IsOpenBreakMinusDigitQueue(input, digit);
+
+        if (isStartWithMinus || isMinusAfterOpenBreak)
+        {
+            digits.Push(-1 * digit);
+            operations.Pop();
+            return;
+        }
+        
+        digits.Push(digit);
     }
 
     private static void InlinePriority(Capture match, Stack<decimal> digits, Stack<string> operations)
@@ -118,14 +133,23 @@ public class CalcNumerator
 
     private static decimal Operation(string operation, decimal first, decimal second)
     {
-        return operation switch
+        switch (operation)
         {
-            "*" => second * first,
-            "+" => second + first,
-            "/" => second / first,
-            "-" => second - first,
-            _ => throw new NotOperationSymbolException()
-        };
+            case "*":
+                return second * first;
+            case "+":
+                return second + first;
+            case "/":
+                if (first == 0)
+                {
+                    throw new DivideByZeroException();
+                }
+                return second / first;
+            case "-":
+                return second - first;
+            default:
+                throw new NotOperationSymbolException();
+        }
     }
     #endregion
 }

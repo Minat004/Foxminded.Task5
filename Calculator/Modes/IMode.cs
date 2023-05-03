@@ -8,5 +8,5 @@ public interface IMode
 
     public void SetResult(string input, decimal value);
     
-    public void SetResult(string input, string value);
+    public void SetResult(string? input, string value);
 }

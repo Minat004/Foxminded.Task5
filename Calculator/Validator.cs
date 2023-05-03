@@ -40,7 +40,9 @@ public static class Validator
 
     public static void CorrectQueue(string? input)
     {
-        if (Regex.IsMatch(input!, @"\d+\s+\d+") || Regex.IsMatch(input!, @"[*+/(-]\s*[**+/)-]"))
+        if (Regex.IsMatch(input!, @"\d+\s+\d+") 
+            || Regex.IsMatch(input!, @"[*+/(-]\s*[**+/)]")
+            || Regex.IsMatch(input!, @"[-]{2,}"))
         {
             throw new WrongQueueException();
         }
@@ -66,5 +68,10 @@ public static class Validator
         {
             throw new NotCorrectBreaksException();
         }
+    }
+
+    public static bool IsOpenBreakMinusDigitQueue(string? input, decimal digit)
+    {
+        return Regex.IsMatch(input!, @"\(\s*\-{1}\s*" + digit);
     }
 }
