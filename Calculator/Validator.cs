@@ -40,14 +40,31 @@ public static class Validator
 
     public static void CorrectQueue(string? input)
     {
-        if (Regex.IsMatch(input!, @"\d+\s+\d+") && Regex.IsMatch(input!, @"[*+/(-]\s*[**+/)-]"))
+        if (Regex.IsMatch(input!, @"\d+\s+\d+") || Regex.IsMatch(input!, @"[*+/(-]\s*[**+/)-]"))
         {
             throw new WrongQueueException();
         }
     }
 
-    public static void CorrectBreaks(string input)
+    public static void CorrectBreaks(string? input)
     {
+        var regex = new Regex(@"[()]");
+        var stack = new Stack<string>();
         
+        foreach (Match match in regex.Matches(input!))
+        {
+            stack.Push(match.Value);
+            
+            if (match.Value == ")" && stack.Count > 1)
+            {
+                stack.Pop();
+                stack.Pop();
+            }
+        }
+        
+        if (stack.Count != 0)
+        {
+            throw new NotCorrectBreaksException();
+        }
     }
 }

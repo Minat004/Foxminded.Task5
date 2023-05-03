@@ -1,5 +1,4 @@
 ﻿using Calculator.Modes;
-using Calculator.Wrapper.Console;
 using Microsoft.Extensions.Configuration;
 using Moq;
 

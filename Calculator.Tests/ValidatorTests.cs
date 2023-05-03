@@ -37,4 +37,21 @@ public class ValidatorTests
     {
         Assert.Throws<MarginException>(() => Validator.DigitOnEdges(input));
     }
+    
+    [Theory]
+    [InlineData(@"1++2+4-56")]
+    [InlineData(@"1+2 3+4")]
+    public void CorrectQueueTest(string? input)
+    {
+        Assert.Throws<WrongQueueException>(() => Validator.CorrectQueue(input));
+    }
+    
+    [Theory]
+    [InlineData(@"((1+2)")]
+    [InlineData(@"(1+(2/(3*4))")]
+    [InlineData(@"1+)(2/(3*4))")]
+    public void CorrectBreaksTest(string? input)
+    {
+        Assert.Throws<NotCorrectBreaksException>(() => Validator.CorrectBreaks(input));
+    }
 }
